@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="style.css" />
+		<meta name="description" content="Juego de ajedrez" />
+		<meta name="keywords" content="ajedrez, juego" />
+		<meta name="author" content="Tomoki" />
+		<meta name="theme-color" content="#ffffff" />
+		<meta name="og:title" content="Ajedrez - Juego de estrategia" />
+		<meta name="og:description" content="Disfruta de este juego de ajedrez" />
+		<meta
+			name="og:image"
+			content="https://www.chess.com/bundles/web/images/offline-play/standardboard.1d6f9426.png"
+		/>
+
+		<title>Ajedrez</title>
+	</head>
+	<body>
+		<div class="contenido-izquierdo">
+			<p>Turno: <span id="turnoActual"></span></p>
+			<button id="boton">Más información</button>
+			<span id="parrafo" hidden>
+				Ajedrez hecho por mi.<br />
+				Tiene las funciones captura al paso <br />
+				y enroque (para esto último seleccionar
+				<br />
+				al rey y después seleccionar <br />
+				2 columnas de diferencia)
+			</span>
+		</div>
+		<div class="contenido-central">
+			<table id="tabla"></table>
+		</div>
+		<script src="functions.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>
