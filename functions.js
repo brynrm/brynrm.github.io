@@ -19,6 +19,7 @@ function crearPieza(tipo, color, posicion) {
 		color,
 		posicion,
 		avanceDoble: false,
+		// avanceDobleVerdadero: false,
 		seMovio: false
 	};
 }
@@ -70,6 +71,8 @@ function moverPieza(pieza, nuevaPosicion) {
 		(obtenerPieza(`${fila}-${columna + 1}`)?.color === bandoContrario &&
 			obtenerPieza(`${fila}-${columna + 1}`)?.tipo === 'peon');
 
+	// const avanceDobleVerdadero = pieza.tipo === 'peon' && Math.abs(fila - filaAnterior) === 2;
+
 	const peonDeAtras = obtenerPieza(`${filaAnterior}-${columna}`);
 
 	// Verifica si el movimiento es una captura al paso
@@ -90,6 +93,18 @@ function moverPieza(pieza, nuevaPosicion) {
 		fichas = fichas.filter(p => p.posicion !== peonDeAtras.posicion);
 		// tabla.rows[filaPeonAtras + 1].cells[columnaPeonAtras + 1].innerHTML = '';
 		document.getElementById(peonDeAtras.posicion).innerHTML = '';
+	}
+
+	if (pieza.tipo === 'peon' && Math.abs(fila - filaAnterior) === 2) {
+		let letrasxd = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+		// invertir letras
+		letrasxd = letrasxd.reverse();
+
+		let incrementoFilaxd = pieza.color === 'bl' ? -1 : 1;
+		avanceDobleVerdadero =
+			letrasxd[parseInt(columna) - 1] + (parseInt(fila) + incrementoFilaxd);
+	} else {
+		avanceDobleVerdadero = '';
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +194,8 @@ function puedeMoverse(pieza, nuevaPosicion) {
 				fila - piezaPosicion[0] === 2 &&
 				columna - piezaPosicion[1] === 0 &&
 				piezaPosicion[0] === 2 &&
-				!obtenerPieza(nuevaPosicion)
+				!obtenerPieza(nuevaPosicion) &&
+				!obtenerPieza(`${fila - 1}-${columna}`)
 			) {
 				// avance doble
 				return true;
@@ -203,7 +219,8 @@ function puedeMoverse(pieza, nuevaPosicion) {
 				piezaPosicion[0] - fila === 2 &&
 				columna - piezaPosicion[1] === 0 &&
 				piezaPosicion[0] === 7 &&
-				!obtenerPieza(nuevaPosicion)
+				!obtenerPieza(nuevaPosicion) &&
+				!obtenerPieza(`${fila + 1}-${columna}`)
 			) {
 				// avance doble
 				return true;
@@ -437,3 +454,118 @@ function puedeEnrocar(pieza, nuevaPosicion) {
 function ActualizarTurno(bando, turnoNode) {
 	turnoNode.innerText = bando === 'bl' ? 'Blancas' : 'Negras';
 }
+
+/**
+ * Genera el FEN del tablero actual.
+ * @returns {string} - El FEN del tablero actual.
+ */
+function generateFEN() {
+	const piezaMap = {
+		peon: 'p',
+		torre: 'r',
+		caballo: 'n',
+		alfil: 'b',
+		reina: 'q',
+		rey: 'k'
+	};
+
+	let fen = '';
+	for (let fila = 8; fila >= 1; fila--) {
+		let vacios = 0;
+		for (let columna = 1; columna <= 8; columna++) {
+			const pieza = obtenerPieza(`${fila}-${9 - columna}`);
+			if (pieza) {
+				if (vacios > 0) {
+					fen += vacios;
+					vacios = 0;
+				}
+				fen +=
+					pieza.color === 'bl'
+						? piezaMap[pieza.tipo].toUpperCase()
+						: piezaMap[pieza.tipo];
+			} else {
+				vacios++;
+			}
+		}
+		if (vacios > 0) {
+			fen += vacios;
+		}
+		if (fila > 1) {
+			fen += '/';
+		}
+	}
+
+	fen += ' ';
+	fen += bando === 'bl' ? 'w' : 'b';
+	fen += ' ';
+
+	const reyBlanco = obtenerPieza('1-4');
+	const reyNegro = obtenerPieza('8-4');
+	const torreBlancaCorta = obtenerPieza('1-1');
+	const torreBlancaLarga = obtenerPieza('1-8');
+	const torreNegraCorta = obtenerPieza('8-1');
+	const torreNegraLarga = obtenerPieza('8-8');
+
+	let enroques = '';
+
+	if (reyBlanco?.tipo === 'rey' && !reyBlanco?.seMovio) {
+		if (torreBlancaCorta?.tipo === 'torre' && !torreBlancaCorta?.seMovio) {
+			enroques += 'K';
+		}
+		if (torreBlancaLarga?.tipo === 'torre' && !torreBlancaLarga?.seMovio) {
+			enroques += 'Q';
+		}
+	}
+	if (reyNegro?.tipo === 'rey' && !reyNegro?.seMovio) {
+		if (torreNegraCorta?.tipo === 'torre' && !torreNegraCorta?.seMovio) {
+			enroques += 'k';
+		}
+		if (torreNegraLarga?.tipo === 'torre' && !torreNegraLarga?.seMovio) {
+			enroques += 'q';
+		}
+	}
+
+	fen += enroques || '-';
+	fen += ' ';
+
+	// verificar si hay captura al paso
+	fen += avanceDobleVerdadero || '-';
+
+	fen += ' ';
+	fen += '0'; // Contador de medio movimientos
+	fen += ' ';
+	fen += '0'; // Contador de movimientos
+
+	// Blanks Escaped
+	fen = fen.replace(/ /g, '%20');
+
+	return fen;
+}
+
+// XD
+function leTocaALaIaXD() {
+	fetch(`https://stockfish.online/api/s/v2.php?fen=${generateFEN()}&depth=15`)
+		.then(response => response.json())
+		.then(data => {
+			let bestMove = data.bestmove;
+			let [fichaInicial, casillaFinal] = [bestMove.slice(9, 11), bestMove.slice(11, 13)];
+
+			let columnaInicial = fichaInicial.charCodeAt(0) - 96;
+			let filaInicial = fichaInicial[1];
+			let columnaFinal = casillaFinal.charCodeAt(0) - 96;
+			let filaFinal = casillaFinal[1];
+
+			// invertir la columna
+			columnaInicial = 9 - columnaInicial;
+			columnaFinal = 9 - columnaFinal;
+
+			const piezaAMover = obtenerPieza(`${filaInicial}-${columnaInicial}`);
+			const casillaAMover = `${filaFinal}-${columnaFinal}`;
+
+			moverPieza(piezaAMover, casillaAMover);
+			bando = bando === 'bl' ? 'ne' : 'bl';
+			ActualizarTurno(bando, turno);
+		});
+}
+
+const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
