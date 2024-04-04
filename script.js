@@ -7,14 +7,12 @@ const botonsito = document.getElementById('boton');
 const parrafoxd = document.getElementById('parrafo');
 const turno = document.getElementById('turnoActual');
 // let bando = 'bl';
-let bandoPrincipal;
-// document cuando se haya cargado el DOM
-document.addEventListener('DOMContentLoaded', () => {
-	let bando = randomNumber(0, 1) ? 'bl' : 'ne';
-	bandoPrincipal = bando;
-	ActualizarTurno(bando, turno);
-});
+const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+let bando = randomNumber(0, 1) ? 'bl' : 'ne';
+let bandoPrincipal = bando;
 let avanceDobleVerdadero = '';
+
+ActualizarTurno(bando, turno);
 
 botonsito.addEventListener('click', () => {
 	parrafoxd.hidden = !parrafoxd.hidden;
