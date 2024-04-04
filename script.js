@@ -7,16 +7,18 @@ const botonsito = document.getElementById('boton');
 const parrafoxd = document.getElementById('parrafo');
 const turno = document.getElementById('turnoActual');
 // let bando = 'bl';
-let bando = randomNumber(0, 1) ? 'bl' : 'ne';
-let bandoPrincipal = bando;
-
+let bandoPrincipal;
+// document cuando se haya cargado el DOM
+document.addEventListener('DOMContentLoaded', () => {
+	let bando = randomNumber(0, 1) ? 'bl' : 'ne';
+	bandoPrincipal = bando;
+	ActualizarTurno(bando, turno);
+});
 let avanceDobleVerdadero = '';
 
 botonsito.addEventListener('click', () => {
 	parrafoxd.hidden = !parrafoxd.hidden;
 });
-
-ActualizarTurno(bando, turno);
 
 const imagenes = {
 	peon: {
