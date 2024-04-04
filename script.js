@@ -6,12 +6,16 @@ const tabla = document.getElementById('tabla');
 const botonsito = document.getElementById('boton');
 const parrafoxd = document.getElementById('parrafo');
 const turno = document.getElementById('turnoActual');
+// let bando = 'bl';
+let bando = randomNumber(0, 1) ? 'bl' : 'ne';
+let bandoPrincipal = bando;
+
+let avanceDobleVerdadero = '';
 
 botonsito.addEventListener('click', () => {
 	parrafoxd.hidden = !parrafoxd.hidden;
 });
 
-let bando = 'bl';
 ActualizarTurno(bando, turno);
 
 const imagenes = {
@@ -96,7 +100,15 @@ fichas.forEach(pieza => {
 	tabla.rows[fila - 1].cells[columna - 1].innerHTML = imagenes[pieza.tipo][pieza.color];
 });
 
+if (bando === 'ne') {
+	bando = 'bl';
+	leTocaALaIaXD();
+}
+
 tabla.addEventListener('click', e => {
+	// if (bando !== bandoPrincipal) {
+	// 	return;
+	// }
 	// obtener el td mas cerca
 	let event = e.target.closest('td');
 	const posicionxd = event.id;
@@ -135,6 +147,8 @@ tabla.addEventListener('click', e => {
 						peonseleccionado = undefined;
 						bando = bando === 'bl' ? 'ne' : 'bl';
 						ActualizarTurno(bando, turno);
+						////////////////////////////////////////
+						leTocaALaIaXD();
 					} else {
 						document
 							.getElementById(peonseleccionado.posicion)
@@ -159,6 +173,9 @@ tabla.addEventListener('click', e => {
 				peonseleccionado = undefined;
 				bando = bando === 'bl' ? 'ne' : 'bl';
 				ActualizarTurno(bando, turno);
+
+				////////////////////////////////////////
+				leTocaALaIaXD();
 			} else {
 				document
 					.getElementById(peonseleccionado.posicion)
