@@ -80,7 +80,7 @@ button:hover {
 	/* filter: grayscale(50%) !important; */
 	/* saturacion */
 	filter: grayscale(60%) !important;
-	border: 1px solid #000;
+	/* border: 1px solid #000; */
 }
 
 .contenido-izquierdo {
