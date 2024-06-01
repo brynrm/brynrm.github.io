@@ -81,6 +81,7 @@ button:hover {
 	/* saturacion */
 	filter: grayscale(60%) !important;
 	/* border: 1px solid #000; */
+	outline: 1px solid black;
 }
 
 .contenido-izquierdo {
